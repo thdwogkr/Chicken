@@ -3,27 +3,22 @@ package example;
 import java.util.Scanner;
 
 public class KDeliveryMainV1 {
-
-    private Feedback[] feedbacks;
-    private int feedbackIdx = 0;
     private static int SHOP_MAX = 5;
-    private Shop[] shops;
     private static int ORDER_MAX = 5;
-    private Order[] orders;
-    private int orderIdx = 0;
     private static int FEEDBACK_MAX = ORDER_MAX;
-    private int shopIdx = 0;
+
+    private static Shop[] shops = new Shop[SHOP_MAX];
+    private static Order[] orders = new Order[ORDER_MAX];
+    private static Feedback[] feedbacks = new Feedback[FEEDBACK_MAX];
+
+    private static int shopIdx = 0;
+    private static int orderIdx = 0;
+    private static int feedbackIdx = 0;
+
     private static Scanner sc;
 
-    private void initValues() {
-        feedbacks = new Feedback[FEEDBACK_MAX];
-        shops = new Shop[SHOP_MAX];
-        orders = new Order[ORDER_MAX];
-    }
 
-
-
-    public void selectOrderMenu() {
+    public static void selectOrderMenu() {
         System.out.println("[안내] 고객님! 메뉴 주문을 진행하겠습니다!\n" +
                 "[안내] 주문자 이름을 알려주세요!");
         System.out.print(">>> ");
@@ -40,8 +35,7 @@ public class KDeliveryMainV1 {
         for( int i = 0; i<shopIdx ; i++) {
             if ( shops[i].checkMenu(shopName, menuName)) {
 
-                Order order = new Order(shopName, customerName, menuName);
-                orders[orderIdx++] = order;
+                orders[orderIdx++] = new Order(shopName, customerName, menuName);
 
                 System.out.printf("[안내] %s님!\n" +
                         "[안내] %s매장에 %s주문이 완료되었습니다.", customerName, shopName, menuName);
@@ -55,11 +49,11 @@ public class KDeliveryMainV1 {
 
 
     }
-    public void close() {
-
+    public static void close() {
+        System.out.println("[안내] 이용해주셔서 감사합니다.");
     }
 
-    public void selectAddShopMenu() {
+    public static void selectAddShopMenu() {
         System.out.println("[안내] 반갑습니다. 가맹주님!\n" +
                 "[안내] 음식점 상호는 무엇인가요?");
         System.out.print(">>> ");
@@ -81,18 +75,12 @@ public class KDeliveryMainV1 {
         }
 
         if( !isExist ) {
-            Shop shop = new Shop(shopName);
-            shop.addFood( menuName, price);
-            shops[shopIdx++] = shop;
+            shops[shopIdx] = new Shop(shopName);
+            shops[shopIdx++].addFood(menuName, price);
         }
 
-
-
-        System.out.printf("[안내]%s에 음식(%s, %d) 추가되었습니다.\n" +
-                "[시스템] 가게 등록이 정상 처리되었습니다.", shopName, menuName, price);
-
     }
-    public int selectMainMenu() {
+    public static int selectMainMenu() {
         System.out.println("-------------------------\n" +
                 "1) [사장님용] 음식점 등록하기\n" +
                 "2) [고객님과 사장님용] 음식점 별점 조회하기\n" +
@@ -104,7 +92,7 @@ public class KDeliveryMainV1 {
         System.out.print(">>> ");
         return sc.nextInt();
     }
-    public void selectFeedbackMenu() {
+    public static void selectFeedbackMenu() {
         System.out.println("[안내] 고객님! 별점 등록을 진행합니다.");
         System.out.println("[안내] 주문자 이름은 무엇인가요?");
         System.out.print(">>> ");
@@ -118,12 +106,28 @@ public class KDeliveryMainV1 {
         System.out.println("[안내] 음식맛은 어떠셨나요? (1점 ~ 5점)");
         System.out.print(">>> ");
         int grade = sc.nextInt();
-        System.out.println("[안내] 리뷰 등록이 완료되었습니다.");
 
-        Feedback feedback = new Feedback(customerName, shopName, grade, menuName);
-        feedbacks[feedbackIdx++] = feedback;
+
+        boolean isExist = false;
+        for (int i = 0; i < orderIdx; i++) {
+            if(orders[i].getCustomerName().equals(customerName) &&
+                orders[i].getShopName().equals(shopName) &&
+                    orders[i].getFoodName().equals(menuName)     ) {
+                feedbacks[feedbackIdx++] = new Feedback(customerName, shopName, grade, menuName);
+                System.out.println("[안내] 리뷰 등록이 완료되었습니다.");
+                isExist = true;
+                break;
+            }
+        }
+
+        if ( !isExist ) {
+            System.out.println("주문자 이름 or 상호명 or 음식이름을 확인해주세요.");
+        }
+
+
+
     }
-    public void selectDashboardMenu() {
+    public static void selectDashboardMenu() {
         for(int i=0; i<feedbackIdx; i++) {
             feedbacks[i].printInfo();
         }
@@ -133,34 +137,33 @@ public class KDeliveryMainV1 {
         System.out.println("[치킨의 민족 프로그램 V1] ");
         int select = 0;
         sc = new Scanner(System.in);
-        KDeliveryMainV1 kdm = new KDeliveryMainV1();
-        kdm.initValues();
 
         while (select != 5) {
-            select = kdm.selectMainMenu();
+            select = selectMainMenu();
 
             switch (select) {
                 case 1:
-                    kdm.selectAddShopMenu();
+                    selectAddShopMenu();
                     break;
                 case 2:
-                    kdm.selectDashboardMenu();
+                    selectDashboardMenu();
                     System.out.println("음식점 별점 조회");
                     break;
                 case 3:
-                    kdm.selectOrderMenu();
+                    selectOrderMenu();
                     break;
                 case 4:
-                    kdm.selectFeedbackMenu();
+                    selectFeedbackMenu();
                     break;
                 case 5:
+                    close();
                     break;
                 default:
                     System.out.println("잘못입력하셨습니다.");
                     break;
             }
         }
-        System.out.println("[안내] 이용해주셔서 감사합니다.");
+
     }
 
 }
