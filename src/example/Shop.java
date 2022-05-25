@@ -6,7 +6,7 @@ public class Shop {
     private static final String EMPTY_FOOD = "음식이름";
     private static final int FOOD_MAX = 5;
     private static final int EMPTY_PRICE = 0;
-    private static int foodIdx = 0;
+    private int foodIdx;
     public String shopName;
 
     public Shop(String shopName) {
@@ -18,6 +18,7 @@ public class Shop {
     private void initValues() {
         prices = new int[FOOD_MAX];
         foodNames = new String[FOOD_MAX];
+        foodIdx = 0;
     }
 
     public void addFood(String name, int price) {
@@ -28,9 +29,9 @@ public class Shop {
     }
 
     public boolean checkMenu(String shopName, String foodName) {
-        if (this.shopName == shopName) {
+        if (this.shopName.equals(shopName)) {
             for (int i = 0; i < foodIdx; i++) {
-                if (this.foodNames[i] == foodName) {
+                if (this.foodNames[i].equals(foodName)) {
                     return true;
                 }
             }

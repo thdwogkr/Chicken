@@ -73,7 +73,7 @@ public class KDeliveryMainV1 {
 
         boolean isExist = false;
         for (int i = 0 ; i < shopIdx ; i ++) {
-            if(shops[i].shopName == shopName) {
+            if(shops[i].shopName.equals(shopName)) {
                 shops[i].addFood(menuName, price);
                 isExist = true;
                 break;
