@@ -21,6 +21,8 @@ public class KDeliveryMainV1 {
         orders = new Order[ORDER_MAX];
     }
 
+
+
     public void selectOrderMenu() {
         System.out.println("[안내] 고객님! 메뉴 주문을 진행하겠습니다!\n" +
                 "[안내] 주문자 이름을 알려주세요!");
@@ -33,11 +35,25 @@ public class KDeliveryMainV1 {
         System.out.print(">>> ");
         String menuName = sc.next();
 
-        Order order = new Order(shopName, customerName, menuName);
-        orders[orderIdx++] = order;
+        // 음식점과 메뉴가 등록되어있는지 입력값과 비교
+        boolean isSuccess = false;
+        for( int i = 0; i<shopIdx ; i++) {
+            if ( shops[i].checkMenu(shopName, menuName)) {
 
-        System.out.printf("[안내] %s님!\n" +
-                "[안내] %s매장에 %s주문이 완료되었습니다.", customerName, shopName, menuName);
+                Order order = new Order(shopName, customerName, menuName);
+                orders[orderIdx++] = order;
+
+                System.out.printf("[안내] %s님!\n" +
+                        "[안내] %s매장에 %s주문이 완료되었습니다.", customerName, shopName, menuName);
+                isSuccess = true;
+                break;
+            }
+        }
+
+        if( !isSuccess ) System.out.println("매장명 or 메뉴명을 확인해주세요.");
+
+
+
     }
     public void close() {
 
@@ -54,11 +70,27 @@ public class KDeliveryMainV1 {
         System.out.println("[안내] 해당 메뉴 가격은 얼마인가요?");
         System.out.print(">>> ");
         int price = sc.nextInt();
-        Shop shop = new Shop(shopName);
-        shop.addFood(0, menuName, price);
-        System.out.printf("[안내]노랑 통닭에 음식(%s, %d) 추가되었습니다.\n" +
-                "[시스템] 가게 등록이 정상 처리되었습니다.", menuName, price);
-        shops[shopIdx++] = shop;
+
+        boolean isExist = false;
+        for (int i = 0 ; i < shopIdx ; i ++) {
+            if(shops[i].shopName == shopName) {
+                shops[i].addFood(menuName, price);
+                isExist = true;
+                break;
+            }
+        }
+
+        if( !isExist ) {
+            Shop shop = new Shop(shopName);
+            shop.addFood( menuName, price);
+            shops[shopIdx++] = shop;
+        }
+
+
+
+        System.out.printf("[안내]%s에 음식(%s, %d) 추가되었습니다.\n" +
+                "[시스템] 가게 등록이 정상 처리되었습니다.", shopName, menuName, price);
+
     }
     public int selectMainMenu() {
         System.out.println("-------------------------\n" +
